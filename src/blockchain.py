@@ -1,5 +1,7 @@
 # Initializing our blockchain list
 blockchain = []
+open_transactions = []
+owner = 'Max'
 
 
 def get_last_blockchain_value():
@@ -8,22 +10,36 @@ def get_last_blockchain_value():
         return None
     return blockchain[-1]
 
+# This function accepts two arguments.
+# One required one (transaction_amount) and one optional one (last_transaction)
+# The optional one is optional because it has a default value => [1]
 
-def add_transaction(transaction_amount, last_transaction=[1]):
+
+def add_transaction(recipient, sender=owner, amount=1.0):
     """ Append a new value as well as the last blockchain value to the blockchain.
 
     Arguments:
-        :transaction_amount: The amount tha should be added.
-        :last_transaction: The last blockchain transaction (default [1])
+        :sender: The sender of the coins.
+        :recipient: The recipient of the coins.
+        :amount: The amount of coins sent with the transaction (default = 1.0)
     """
-    if last_transaction == None:
-        last_transaction = [1]
-    blockchain.append([last_transaction, transaction_amount])
+    transaction = {
+        'sender': sender,
+        'recipient': recipient,
+        'amount': amount
+    }
+    open_transactions.append(transaction)
 
+
+
+def mine_block():
+    pass
 
 def get_transaction_value():
     """ Returns the input of the user (a new transaction amount) as a float. """
-    return float(input('Your transaction amount please: '))
+    tx_recipient = input('Enter the recipient of the transaction: ')
+    tx_amount = float(input('Your transaction amount please: '))
+    return tx_recipient, tx_amount
 
 
 def get_user_choice():
@@ -74,8 +90,11 @@ while waiting_for_input:
     print('q: Quit')
     user_choice = get_user_choice()
     if user_choice == '1':
-        tx_amount = get_transaction_value()
-        add_transaction(tx_amount, get_last_blockchain_value())
+        tx_data = get_transaction_value()
+        recipient, amout = tx_data
+        # Add the transaction amount to the blockchain
+        add_transaction(recipient, amount=amout)
+        print(open_transactions)
     elif user_choice == '2':
         print_blockchain_elements()
     elif user_choice == 'h':
