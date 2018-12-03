@@ -1,4 +1,4 @@
-# Initializing our blockchain list
+# Initializing our (empty) blockchain list
 genesis_block = {
     'previous_hash': '',
     'index': 0,
@@ -39,8 +39,6 @@ def add_transaction(recipient, sender=owner, amount=1.0):
 def mine_block():
     last_block = blockchain[-1]
     hashed_block = '-'.join([str(last_block[key]) for key in last_block])
-    print(hashed_block)
-
     block = {
         'previous_hash': hashed_block,
         'index': len(blockchain),
@@ -51,17 +49,20 @@ def mine_block():
 
 def get_transaction_value():
     """ Returns the input of the user (a new transaction amount) as a float. """
+    # Get the user input, transform it from a string to a float and store it
     tx_recipient = input('Enter the recipient of the transaction: ')
     tx_amount = float(input('Your transaction amount please: '))
     return tx_recipient, tx_amount
 
 
 def get_user_choice():
+    """ Prompts the user for its choice and return it."""
     user_input = input('Your choice: ')
     return user_input
 
 
 def print_blockchain_elements():
+    """ Output all blocks of the blockchain. """
     # Output the blockchain list to the console
     for block in blockchain:
         print('Outputtin Block')
@@ -71,6 +72,7 @@ def print_blockchain_elements():
 
 
 def verify_chain():
+    """ Verify the current blockchain an return True if it's valid, False otherwise"""
     # block_index = 0
     is_valid = True
     for block_index in range(len(blockchain)):
@@ -96,6 +98,9 @@ def verify_chain():
 
 
 waiting_for_input = True
+
+# A while loop for the user input interface
+# It's a loop that exists once waiting_for_input becomes False or when break it
 
 while waiting_for_input:
     print('Please choose')
