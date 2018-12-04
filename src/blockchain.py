@@ -17,27 +17,38 @@ def hash_block(block):
 
 
 def get_balance(participant):
-    tx_sender = [[tx['amount'] for tx in block['transactions'] if tx['sender'] == participant] for block in blockchain]
+    tx_sender = [[tx['amount'] for tx in block['transactions']
+                  if tx['sender'] == participant] for block in blockchain]
+    open_tx_sender = [tx['amount'] for tx in open_transactions if tx['sender'] == participant]
+    tx_sender.append(open_tx_sender)
     amount_sent = 0
     for tx in tx_sender:
         if len(tx) > 0:
             amount_sent += tx[0]
-            #for value in tx:
+            # for value in tx:
             #    amount_sent += value
-    tx_recipient = [[tx['amount'] for tx in block['transactions'] if tx['recipient'] == participant] for block in blockchain]
+    tx_recipient = [[tx['amount'] for tx in block['transactions']
+                     if tx['recipient'] == participant] for block in blockchain]
     amount_received = 0
     for tx in tx_recipient:
         if len(tx) > 0:
             amount_received += tx[0]
-            #for value in tx:
+            # for value in tx:
             #    amount_received += value
     return amount_received - amount_sent
+
 
 def get_last_blockchain_value():
     """ Returns the last value of the current blockchain. """
     if len(blockchain) < 1:
         return None
     return blockchain[-1]
+
+
+def verify_transaction(transaction):
+    sender_balance = get_balance(transaction['sender'])
+    return sender_balance >= transaction['amount']
+
 
 # This function accepts two arguments.
 # One required one (transaction_amount) and one optional one (last_transaction)
@@ -57,9 +68,12 @@ def add_transaction(recipient, sender=owner, amount=1.0):
         'recipient': recipient,
         'amount': amount
     }
-    open_transactions.append(transaction)
-    participants.add(sender)
-    participants.add(recipient)
+    if verify_transaction(transaction):
+        open_transactions.append(transaction)
+        participants.add(sender)
+        participants.add(recipient)
+        return True
+    return False
 
 
 def mine_block():
@@ -132,7 +146,10 @@ while waiting_for_input:
         tx_data = get_transaction_value()
         recipient, amout = tx_data
         # Add the transaction amount to the blockchain
-        add_transaction(recipient, amount=amout)
+        if add_transaction(recipient, amount=amout):
+            print('Added transaction!')
+        else:
+            print('Transaction failed!')
         print(open_transactions)
     elif user_choice == '2':
         if mine_block():
